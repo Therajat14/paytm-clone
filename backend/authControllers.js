@@ -81,7 +81,7 @@ const updateUser = async (req, res) => {
 };
 
 const bulkUser = async (req, res) => {
-  const filter = req.body.filter;
+  const filter = req.body.filter || "";
 
   const users = await User.find({
     name: { $regex: filter },

@@ -3,9 +3,7 @@ const mongoose = require("mongoose");
 main().catch((err) => console.log(err));
 
 async function main() {
-  await mongoose.connect(
-    "mongodb+srv://therajat14:therajat14@therajat14.yma6r.mongodb.net/paytm",
-  );
+  await mongoose.connect(process.env.MONGO_URI);
   console.log("connected");
   // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
 }
