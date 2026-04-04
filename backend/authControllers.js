@@ -75,7 +75,18 @@ const signin = async (req, res) => {
 const updateUser = async (req, res) => {
   const { success } = userUpdate.safeParse(req.body);
   if (!success) res.status(400).json({ message: "Invalid input" });
-  await User.updateOne({ _id: req.params.id }, req.body);
+  const user = await User.findByIdAndUpdate(req.userId, req.body);
+  console.log(user);
   res.status(200).json({ message: "User updated" });
 };
-module.exports = { signup, signin, updateUser };
+
+const bulkUser = async (req, res) => {
+  const filter = req.body.filter;
+
+  const users = await User.find({
+    name: { $regex: filter },
+  });
+  res.status(200).json({ users });
+};
+
+module.exports = { signup, signin, updateUser, bulkUser };
