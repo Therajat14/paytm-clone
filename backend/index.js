@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const signupRoutes = require("./routes");
+const authMiddleware = require("./middleware/authMiddleware");
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -13,6 +14,9 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", signupRoutes);
+app.get("/api/test", authMiddleware, (req, res) =>
+  res.send("Hello " + req.userId),
+);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

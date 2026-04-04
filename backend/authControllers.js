@@ -1,11 +1,10 @@
 const User = require("./db");
 const bcrypt = require("bcrypt");
-const { signupSchema, signinSchema } = require("./validation");
+const { signupSchema, signinSchema, userUpdate } = require("./validation");
 const { jwtSign } = require("./jwt");
 
 const signup = async (req, res) => {
   try {
-    // ✅ Zod validation
     const parsed = signupSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({
@@ -16,13 +15,11 @@ const signup = async (req, res) => {
 
     const { name, email, password } = parsed.data;
 
-    // ✅ Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({ message: "Email already in use" });
     }
 
-    // ✅ Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
@@ -44,7 +41,6 @@ const signup = async (req, res) => {
 
 const signin = async (req, res) => {
   try {
-    // ✅ Zod validation
     const parsed = signinSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({
@@ -60,7 +56,6 @@ const signin = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // ✅ Compare hashed password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
@@ -77,4 +72,10 @@ const signin = async (req, res) => {
   }
 };
 
-module.exports = { signup, signin };
+const updateUser = async (req, res) => {
+  const { success } = userUpdate.safeParse(req.body);
+  if (!success) res.status(400).json({ message: "Invalid input" });
+  await User.updateOne({ _id: req.params.id }, req.body);
+  res.status(200).json({ message: "User updated" });
+};
+module.exports = { signup, signin, updateUser };
