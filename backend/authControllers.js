@@ -1,12 +1,18 @@
-const User = require("./db");
+const { User, Account } = require("./db");
 const bcrypt = require("bcrypt");
 const { signupSchema, signinSchema, userUpdate } = require("./validation");
 const { jwtSign } = require("./jwt");
+const { parse } = require("dotenv");
+const { default: mongoose } = require("mongoose");
 
 const signup = async (req, res) => {
+  const session = await mongoose.startSession();
   try {
+    session.startTransaction();
+
     const parsed = signupSchema.safeParse(req.body);
     if (!parsed.success) {
+      await session.abortTransaction();
       return res.status(400).json({
         message: "Invalid input",
         errors: parsed.error.errors,
@@ -15,27 +21,49 @@ const signup = async (req, res) => {
 
     const { name, email, password } = parsed.data;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email }).session(session);
     if (existingUser) {
+      await session.abortTransaction();
       return res.status(409).json({ message: "Email already in use" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-    });
+    const user = await User.create(
+      [
+        {
+          name,
+          email,
+          password: hashedPassword,
+        },
+      ],
+      { session },
+    );
 
-    const token = jwtSign({ userId: user._id });
+    let account = await Account.create(
+      [
+        {
+          userid: user[0]._id,
+          balance: Math.floor(Math.random() * 100000),
+        },
+      ],
+      { session },
+    );
+
+    const token = jwtSign({ userId: user[0]._id });
+
+    await session.commitTransaction();
 
     res.status(201).json({
-      message: "User created",
+      message: "User account created",
       token,
+      account: account[0],
     });
   } catch (err) {
+    await session.abortTransaction();
     res.status(500).json({ err: err.message });
+  } finally {
+    session.endSession();
   }
 };
 
@@ -83,9 +111,12 @@ const updateUser = async (req, res) => {
 const bulkUser = async (req, res) => {
   const filter = req.body.filter || "";
 
-  const users = await User.find({
-    name: { $regex: filter },
-  });
+  const users = await User.find(
+    {
+      name: { $regex: filter },
+    },
+    { name: 1, email: 1 },
+  );
   res.status(200).json({ users });
 };
 
