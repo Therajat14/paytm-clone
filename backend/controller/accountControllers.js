@@ -1,3 +1,6 @@
+const mongoose = require("mongoose");
+const { Account } = require("../db");
+
 const tranferMoney = async (req, res) => {
   let { amount, to } = req.body;
   amount = Number(amount);
@@ -97,4 +100,15 @@ const tranferMoney = async (req, res) => {
   }
 };
 
-module.exports = { tranferMoney };
+const getBalance = async (req, res) => {
+  const account = await Account.findOne(
+    { userid: req.userId },
+    { balance: 1, _id: 0 },
+  );
+  console.log(account);
+  res.status(200).json({
+    balance: account.balance,
+  });
+};
+
+module.exports = { tranferMoney, getBalance };

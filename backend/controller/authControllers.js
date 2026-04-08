@@ -1,7 +1,7 @@
-const { User, Account } = require("./db");
+const { User, Account } = require("../db");
 const bcrypt = require("bcrypt");
-const { signupSchema, signinSchema, userUpdate } = require("./validation");
-const { jwtSign } = require("./jwt");
+const { signupSchema, signinSchema, userUpdate } = require("../validation");
+const { jwtSign } = require("../jwt");
 const { default: mongoose } = require("mongoose");
 
 const signup = async (req, res) => {
