@@ -4,9 +4,9 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const signupRoutes = require("./routes");
+const signupRoutes = require("./routes/userRoutes");
 const authMiddleware = require("./middleware/authMiddleware");
-const accountRoutes = require("./accountRoutes");
+const accountRoutes = require("./routes/accountRoutes");
 const morgan = require("morgan");
 
 app.use(bodyParser.json());
