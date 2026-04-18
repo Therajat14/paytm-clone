@@ -3,14 +3,14 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import SignIn from "./Pages/SignIn";
 import SignUp from "./Pages/SignUp";
 import { Dashboard } from "./Pages/Dashboard";
-import { Send } from "./Pages/Send";
+import SendMoney from "./Pages/SendMoney";
 function App() {
   return (
     <>
       <BrowserRouter>
         <Routes>
           <Route path="dashboard" element={<Dashboard />} />
-
+          <Route path="send" element={<SendMoney />} />
           <Route path="" element={<SignIn />} />
 
           <Route path="login" element={<SignIn />} />

@@ -92,11 +92,11 @@ const updateUser = async (req, res) => {
 };
 
 const bulkUser = async (req, res) => {
-  const filter = req.body.filter || "";
+  const filter = req.query.filter || "";
 
   const users = await User.find(
     {
-      name: { $regex: filter },
+      name: { $regex: filter, $options: "i" },
     },
     { name: 1, email: 1 },
   );

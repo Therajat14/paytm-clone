@@ -4,6 +4,7 @@ import InputField from "../Components/InputField";
 import Button from "../Components/Button";
 import ErrorMessage from "../Components/ErrorMessage";
 import AuthFooter from "../Components/AuthFooter";
+import axios from "axios";
 
 const Signup = () => {
   const [form, setForm] = useState({
@@ -74,7 +75,18 @@ const Signup = () => {
 
         <ErrorMessage text={error} />
 
-        <Button type="submit">Sign Up</Button>
+        <Button
+          type="submit"
+          onClick={async () => {
+            const response = await axios.post(
+              "http://localhost:3000/api/auth/signup",
+              form,
+            );
+            localStorage.setItem("token", response.data.token);
+          }}
+        >
+          Sign Up
+        </Button>
       </form>
 
       <AuthFooter

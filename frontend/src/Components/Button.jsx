@@ -5,6 +5,7 @@ const Button = ({
   type = "button",
   variant = "primary", // primary | outline
   loading = false,
+  onClick,
 }) => {
   const base = "w-full py-2.5 rounded-md font-medium transition";
 
@@ -20,6 +21,7 @@ const Button = ({
       className={`${base} ${variants[variant]} ${
         loading ? "opacity-70 cursor-not-allowed" : ""
       }`}
+      onClick={onClick}
     >
       {loading ? "Please wait..." : children}
     </button>
