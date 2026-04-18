@@ -3,12 +3,15 @@ import FormWrapper from "../Components/FormWrapper";
 import InputField from "../Components/InputField";
 import Button from "../Components/Button";
 import AuthFooter from "../Components/AuthFooter";
+import axios from "axios";
+import { useNavigate } from "react-router";
 
 const Signin = () => {
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({
@@ -48,7 +51,19 @@ const Signin = () => {
           required
         />
 
-        <Button type="submit">Sign In</Button>
+        <Button
+          type="submit"
+          onClick={async () => {
+            const response = await axios.post(
+              "http://localhost:3000/api/auth/signin",
+              form,
+            );
+            localStorage.setItem("token", response.data.token);
+            navigate("/dashboard");
+          }}
+        >
+          Sign In
+        </Button>
       </form>
 
       <AuthFooter
