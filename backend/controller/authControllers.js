@@ -103,4 +103,27 @@ const bulkUser = async (req, res) => {
   res.status(200).json({ users });
 };
 
-module.exports = { signup, signin, updateUser, bulkUser };
+const getUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select("-password");
+    const account = await Account.findOne({ userid: req.userId });
+
+    if (!user || !account) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    console.log({
+      name: user.name,
+      email: user.email,
+      balance: account.balance,
+    });
+    res.status(200).json({
+      name: user.name,
+      email: user.email,
+      balance: account.balance,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports = { signup, signin, updateUser, bulkUser, getUser };
